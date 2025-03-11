@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0-windows10.0.26100.0</TargetFramework>
+    <RootNamespace>SmartFileCrypto</RootNamespace>
+    <AssemblyName>SmartFileCrypto</AssemblyName>
+    <UseWindowsForms>true</UseWindowsForms>
+    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="9.0.2" />
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="9.0.2" />
+    <PackageReference Include="System.Security.Cryptography.X509Certificates" Version="4.3.2" />
+    <PackageReference Include="BouncyCastle.NetCore" Version="2.2.1" />
+  </ItemGroup>
+
+</Project> 
