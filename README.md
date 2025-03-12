@@ -7,8 +7,8 @@
 - 使用任何位於My存放區的憑證進行檔案簽章
 - 支援多種雜湊演算法(SHA1, SHA256, SHA384, SHA512)，預設使用SHA384
 - 簽章驗證
-- 檔案加密
-- 檔案解密 (支援.p7m, .cms, .pgp格式)
+- 檔案加密 (支援憑證加密)
+- 檔案解密 (支援.p7m, .cms格式)
 - 支援 RFC3161 時間戳記
 - 支援指定時間戳記伺服器
 - 支援使用SHA1指紋指定憑證
@@ -45,7 +45,7 @@ SmartFileCrypto list-certs
 ### 檔案簽章
 
 ```
-SmartFileCrypto sign <檔案路徑> [--cert=<證書識別碼>] [--sha1=<憑證指紋>] [--hash=<雜湊演算法>] [--timestamp[=<時間戳記伺服器URL>]]
+SmartFileCrypto sign <檔案路徑> [--cert=<證書識別碼>] [--sha1=<憑證指紋>] [--hash=<雜湊演算法>] [--timestamp[=<時間戳記伺服器URL>]] [--include-content]
 ```
 
 範例：
@@ -55,6 +55,7 @@ SmartFileCrypto sign D:\文件\合約.pdf --sha1=A1B2C3D4E5F67890 --hash=SHA512 
 
 如果未指定證書，系統會彈出Windows憑證選擇對話框（僅顯示具有數位簽章能力的證書）。
 如果指定SHA1指紋，則直接使用該證書而不顯示選擇對話框。
+使用 `--include-content` 選項可將原始檔案內容包含在簽章中，預設為不包含（分離式簽章）。
 
 這將產生一個檔案：
 - `合約.pdf.p7s`：二進制簽章檔
@@ -62,7 +63,7 @@ SmartFileCrypto sign D:\文件\合約.pdf --sha1=A1B2C3D4E5F67890 --hash=SHA512 
 ### 驗證簽章
 
 ```
-SmartFileCrypto verify <已簽章檔案路徑>
+SmartFileCrypto verify <已簽章檔案路徑> [--extract-content] [--debug]
 ```
 
 範例：
@@ -70,10 +71,13 @@ SmartFileCrypto verify <已簽章檔案路徑>
 SmartFileCrypto verify D:\文件\合約.pdf.p7s
 ```
 
+使用 `--extract-content` 選項可提取簽章中所包含的檔案內容（如果簽章包含內容）。
+使用 `--debug` 選項可查看詳細的診斷訊息。
+
 ### 檔案加密
 
 ```
-SmartFileCrypto encrypt <檔案路徑> [--cert=<證書識別碼>] [--sha1=<憑證指紋>]
+SmartFileCrypto encrypt <檔案路徑> [--cert=<證書識別碼>] [--sha1=<憑證指紋>] [--cert-file=<憑證檔案路徑>]
 ```
 
 範例：
@@ -81,8 +85,14 @@ SmartFileCrypto encrypt <檔案路徑> [--cert=<證書識別碼>] [--sha1=<憑�
 SmartFileCrypto encrypt D:\文件\機密.docx --sha1=A1B2C3D4E5F67890
 ```
 
-如果未指定證書，系統會彈出Windows憑證選擇對話框（僅顯示具有加密能力的證書）。
+或使用檔案中的憑證：
+```
+SmartFileCrypto encrypt D:\文件\機密.docx --cert-file=D:\憑證\公鑰.cer
+```
+
+如果未指定證書，系統會彈出Windows憑證選擇對話框（顯示所有具有公鑰的證書）。
 如果指定SHA1指紋，則直接使用該證書而不顯示選擇對話框。
+如果指定憑證檔案路徑，則從檔案載入憑證（支援.cer、.crt、.pem、.pfx、.p12等格式）。
 
 這將產生一個檔案：
 - `機密.docx.cms`：加密檔案
@@ -98,7 +108,7 @@ SmartFileCrypto decrypt <已加密檔案路徑>
 SmartFileCrypto decrypt D:\文件\機密.docx.cms
 ```
 
-支援的加密檔案格式：`.cms`、`.p7m`、`.pgp`
+支援的加密檔案格式：`.cms`、`.p7m`
 
 ## 指定雜湊演算法
 
@@ -124,8 +134,8 @@ SmartFileCrypto sign 文件.pdf --timestamp=http://timestamp.digicert.com
 常用的時間戳記伺服器包括：
 - DigiCert: http://timestamp.digicert.com
 - Sectigo: http://timestamp.sectigo.com
-- GlobalSign: http://timestamp.globalsign.com
-- Microsoft: http://timestamp.microsoft.com
+- GlobalSign: http://timestamp.globalsign.com/tsa/r6advanced1
+- Microsoft: http://timestamp.acs.microsoft.com
 - Apple: http://timestamp.apple.com/ts01
 
 ## 憑證指定方式
@@ -180,7 +190,7 @@ A: 確認您擁有解密所需的私鑰，且您有正確的權限。
 A: 使用 `--sha1=` 參數指定精確的憑證指紋。
 
 **Q: 加密檔案的副檔名是什麼？**
-A: 加密後的檔案會產生`.cms`副檔名，程式解密時支援`.cms`、`.p7m`和`.pgp`格式。
+A: 加密後的檔案統一使用`.cms`副檔名，程式解密時支援`.cms`、`.p7m`格式。
 
 **Q: 這個軟體安全嗎？**
 A: 這個軟體使用AI生成，發布者不保證安全性質，用於學習用途(學習歷程)，基本功能姑且沒有問題。
@@ -197,9 +207,3 @@ A: 憑證的讀取依賴Windows的API，你可以讓AI改成使用PKCS#11的方�
 ## 開發資訊
 
 本專案由Cursor呼叫claude-3.7-sonnet-thinking進行開發。
-
-## 注意事項
-
-- 本工具使用 Windows 原生密碼學 API，而非 OpenSSL 或其他第三方庫
-- 時間戳記服務預設使用 DigiCert 的免費服務，您可以使用 `--timestamp=URL` 參數指定其他服務
-- 輸出格式與 Kleopatra 兼容，但不是標準的 PGP 格式 
