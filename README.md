@@ -207,3 +207,7 @@ A: 憑證的讀取依賴Windows的API，你可以讓AI改成使用PKCS#11的方�
 ## 開發資訊
 
 本專案由Cursor呼叫claude-3.7-sonnet-thinking進行開發。
+
+## 其他
+本專案為學習歷程內容(課程學習成果)
+可由此下載p7s檔案驗證PDF: [下載連結](https://mctea01.github.io/mctea01/%E8%B3%87%E8%A8%8A%E8%AA%B2%E7%A8%8B%E5%AD%B8%E7%BF%92%E6%88%90%E6%9E%9C-30515%E6%9E%97%E5%93%B2%E5%85%A8.pdf.p7s)
